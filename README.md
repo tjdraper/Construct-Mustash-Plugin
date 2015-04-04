@@ -4,7 +4,7 @@ To use with Mustash, put the plugin file in `./system/expressionengine/third_par
 
 ## Links
 
-- Construct (coming soon)
+- [Construct](https://buzzingpixel.com/ee-add-ons/construct)
 - [Stash](https://github.com/croxton/Stash)
 - [Mustash](https://github.com/croxton/Stash/wiki/Mustash)
 
