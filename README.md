@@ -1,4 +1,4 @@
-# Construct Mustash plugin (ExpressionEngine) for running Mustash cache breaking rules when Construct hooks are run
+# ExpressionEngine Construct Mustash plugin for triggering Mustash cache breaking rules when Construct hooks are run
 
 To use with Mustash, put the plugin file in `./system/expressionengine/third_party/mustash/plugins/`
 
