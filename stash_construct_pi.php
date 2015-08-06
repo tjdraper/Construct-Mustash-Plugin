@@ -1,117 +1,85 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php if (! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
- * Construct Control Panel Class
+ * Construct Mustash plugin
  *
- * @package    Stash_construct_pi
- * @author     TJ Draper <tj@buzzingpixel.com>
- * @link       https://buzzingpixel.com/ee-add-ons/construct
- * @copyright  Copyright (c) 2015, BuzzingPixel
+ * @package Stash_construct_pi
+ * @author TJ Draper <tj@buzzingpixel.com>
+ * @link https://buzzingpixel.com/ee-add-ons/construct
+ * @copyright Copyright (c) 2015, BuzzingPixel
  */
- class Stash_construct_pi extends Mustash_plugin {
+class Stash_construct_pi extends Mustash_plugin
+{
+	public $name = 'Construct';
+	public $version = '1.0.1';
+	public $priority = '10';
+	protected $hooks = array(
+		'construct_updated',
+	);
 
- 	/**
- 	 * Stash Plugin Name
- 	 *
- 	 * @var 	string
- 	 * @access 	public
- 	 */
- 	public $name = 'Construct';
+	public function __construct()
+	{
+		parent::__construct();
+	}
 
- 	/**
- 	 * Stash Plugin Version
- 	 *
- 	 * @var 	string
- 	 * @access 	public
- 	 */
- 	public $version = '1.0.0';
+	/**
+	 * Set groups for this object
+	 *
+	 * @access protected
+	 * @return array
+	 */
+	protected function set_groups()
+	{
+		$trees = $this->getTrees();
 
- 	/**
- 	 * Extension hook priority
- 	 *
- 	 * @var 	integer
- 	 * @access 	public
- 	 */
- 	public $priority = '10';
+		return $trees;
+	}
 
- 	/**
- 	 * Extension hooks
- 	 *
- 	 * @var 	array
- 	 * @access 	protected
- 	 */
- 	protected $hooks = array(
- 		'construct_updated',
- 	);
+	/**
+	 * Hook: construct_updated
+	 *
+	 * @access public
+	 * @param array (the nodes that were updated)
+	 * @return void
+	 */
+	public function construct_updated($nodes)
+	{
+		$treeIds = array();
 
- 	/**
- 	 * Constructor
- 	 *
- 	 * @return void
- 	 */
- 	public function __construct()
- 	{
- 		parent::__construct();
- 	}
+		foreach ($nodes as $key => $val) {
+			$treeIds[$val['node_tree_id']] = $val['node_tree_id'];
+		}
 
- 	/**
- 	 * Set groups for this object
- 	 *
- 	 * @access	protected
- 	 * @return	array
- 	 */
- 	protected function set_groups()
- 	{
- 		$trees = $this->_getTrees();
+		foreach ($treeIds as $val) {
+			$this->flush_cache(__FUNCTION__, $val);
+		}
+	}
 
- 		return $trees;
- 	}
+	/**
+	 * Set groups for this object
+	 *
+	 * @access private
+	 * @return array
+	 */
+	private function getTrees()
+	{
+		$treesQuery = ee()->db
+			->select('tree_id, tree_name')
+			->from('construct_trees')
+			->get();
 
- 	/**
- 	 * Hook: construct_updated
- 	 *
- 	 * @access	public
- 	 * @param	array (the nodes that were updated)
- 	 * @return	void
- 	 */
- 	public function construct_updated($nodes)
- 	{
- 		$treeIds = array();
+		if ($treesQuery->num_rows > 0) {
+			$trees = $treesQuery->result_array();
 
- 		foreach ($nodes as $key => $val) {
- 			$treeIds[$val['node_tree_id']] = $val['node_tree_id'];
- 		}
+			$returnArray = array();
 
- 		foreach ($treeIds as $val) {
- 			$this->flush_cache(__FUNCTION__, $val);
- 		}
- 	}
+			foreach ($trees as $key => $val) {
+				$returnArray[$val['tree_id']] = $val['tree_name'];
+			}
 
- 	/**
- 	 * Set groups for this object
- 	 *
- 	 * @access	protected
- 	 * @return	array
- 	 */
- 	private function _getTrees()
- 	{
- 		$treesQuery = ee()->db
- 			->select('tree_id, tree_name')
- 			->from('construct_trees')
- 			->get();
+			return $returnArray;
+		}
 
- 		if ($treesQuery->num_rows > 0) {
- 			$trees = $treesQuery->result_array();
-
- 			$returnArray = array();
-
- 			foreach ($trees as $key => $val) {
- 				$returnArray[$val['tree_id']] = $val['tree_name'];
- 			}
-
- 			return $returnArray;
- 		}
-
- 		return array();
- 	}
- }
+		return array();
+	}
+}
