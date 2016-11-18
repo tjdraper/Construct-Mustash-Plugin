@@ -1,7 +1,7 @@
 <?php if (! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
- * Construct Mustash plugin
+ * Construct Mustash plugin (EE 3.x)
  *
  * @package Stash_construct_pi
  * @author TJ Draper <tj@buzzingpixel.com>
@@ -11,15 +11,16 @@
 class Stash_construct_pi extends Mustash_plugin
 {
 	public $name = 'Construct';
-	public $version = '1.0.1';
+	public $version = '2.0.0';
 	public $priority = '10';
-	protected $hooks = array(
-		'construct_updated',
-	);
+	protected $dependencies = array('Construct');
 
 	public function __construct()
 	{
 		parent::__construct();
+
+		// register hook
+		$this->register_hook('construct_updated');
 	}
 
 	/**
@@ -64,8 +65,9 @@ class Stash_construct_pi extends Mustash_plugin
 	private function getTrees()
 	{
 		$treesQuery = ee()->db
-			->select('tree_id, tree_name')
+			->select('id, tree_name')
 			->from('construct_trees')
+			->order_by('tree_order', 'asc')
 			->get();
 
 		if ($treesQuery->num_rows > 0) {
@@ -74,7 +76,7 @@ class Stash_construct_pi extends Mustash_plugin
 			$returnArray = array();
 
 			foreach ($trees as $key => $val) {
-				$returnArray[$val['tree_id']] = $val['tree_name'];
+				$returnArray[$val['id']] = $val['tree_name'];
 			}
 
 			return $returnArray;
